@@ -1,0 +1,93 @@
+{
+    "layer"    : "top",
+    "position" : "top",
+    "height"   : 30,
+
+    "modules-left": ["sway/workspaces", "sway/mode", "sway/window"],
+    "modules-center": [],
+    "modules-right": ["pulseaudio", "backlight", "cpu", "memory", "network#2", "network#1", "battery", "idle_inhibitor", "tray", "clock"],
+    "sway/mode": {
+        "format": " {}"
+    },
+    "sway/workspaces": {
+        "format": "{name}",
+        "disable-scroll": true
+    },
+    "sway/window": {
+        "max-length": 100,
+        "tooltip": false
+    },
+    "clock": {
+        "format": "{:%a %d %b %H:%M}",
+        "tooltip": false
+    },
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["", "", "", "", ""],
+        "format-charging": "⚡{capacity}%",
+        "interval": 15,
+        "states": {
+            "warning": 25,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+		"network#1": {
+    		"interface": "wlp0s20f3",
+    		"format": "Disconnected",
+    		"format-wifi": "{essid} ({signaldBm}db)",
+    		"format-disconnected": "Disconnected", //An empty format will hide the module.
+    		"tooltip-format-wifi": "{essid} ({signalStrength}%)",
+    		"tooltip-format-disconnected": "Disconnected",
+    		"max-length": 50
+		},
+		"network#2": {
+    		"interface": "office",
+    		"format": "{ifname}",
+    		"format-ethernet": "[{ipaddr}]",
+    		"format-disconnected": "[office disconnected]", //An empty format will hide the module.
+    		"tooltip-format-ethernet": "{ifname} ",
+    		"tooltip-format-disconnected": "click to connect",
+    		"max-length": 50
+		},
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "🔇",
+        "format-bluetooth": "[ {desc}]",
+        "format-icons": {
+            "phone": [" Spk"],
+            "default": ["Spk"]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol",
+        "interval": 10,
+        "tooltip": false
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip": false
+    },
+    "memory": {
+      "interval": 30,
+      "format": "Mem {}%",
+      "max-length": 10
+    },
+    "cpu": {
+      "interval": 10,
+      "format": "CPU {usage}%",
+      "max-length": 10
+    },
+    "backlight": {
+      "device": "intel_backlight",
+      "format": "Scr {percent}%"
+    },
+    "tray": {
+        "icon-size": 18,
+				"spacing": 10
+    }
+}

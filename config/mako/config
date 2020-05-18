@@ -1,0 +1,11 @@
+background-color=#222222
+progress-color=#444444
+icons=1
+padding=8
+width=450
+border-color=#dddddd
+border-size=3
+border-radius=8
+icon-path=/usr/share/icons/Adwaita/
+actions=1
+default-timeout=3333

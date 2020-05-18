@@ -1,0 +1,288 @@
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+set $menu bemenu-run -n | xargs swaymsg exec
+
+default_border pixel 1
+default_floating_border pixel 4
+gaps inner 4
+gaps outer 1
+smart_gaps on
+smart_borders on
+focus_follows_mouse no
+workspace_auto_back_and_forth no
+
+set $background ~/.config/sway/backgrounds/rocks.jpg
+output "*" background $background fill
+
+#class                   border  backgr. text    indicator child_border
+client.focused           #be5046 #be5046 #be5046 #be5046   #be5046
+client.focused_inactive  #5c6370 #3b3228 #ffffff #5c6370   #5c6370
+client.unfocused         #5c6370 #3b3228 #ffffff #5c6370   #5c6370
+
+font pango:SourceCodePro Medium 12
+
+# Startup
+exec swaymsg 'workspace $ws1; exec alacritty; workspace $ws1'
+exec swaymsg 'workspace $ws8; exec joplin-desktop; workspace $ws1'
+exec swaymsg 'workspace $ws2; exec firefox; workspace $ws1``'
+exec swaymsg 'workspace $ws10; exec slack; workspace $ws1'
+
+assign [class="Joplin"] $ws8
+assign [class="Slack"] $ws10
+
+exec {
+  /sbin/mako
+#  /sbin/xhost +local:
+#  /sbin/dbus-launch
+#  /sbin/dbus-update-activation-environment DISPLAY XAUTHORITY --systemd --all
+}
+
+exec_always --no-startup-id {
+#  xrdb merge ~/.Xresources
+#  gsettings set org.gnome.desktop.interface gtk-theme    Ant-Dracula
+#  gsettings set org.gnome.desktop.interface icon-theme   Adwaita
+#  gsettings set org.gnome.desktop.interface cursor-theme Adwaita
+#  gsettings set org.gnome.desktop.interface document-font-name 'System San Francisco Display Bold 11'
+#  gsettings set org.gnome.desktop.interface font-name 'System San Francisco Display Bold 11'
+#  gsettings set org.gnome.desktop.interface monospace-font-name 'Inconsolata-g for Powerline 11'
+}
+
+# screenshot to disk and clipboard
+bindsym $mod+print exec --no-startup-id slurp | grim -g - -- - | wl-copy && wl-paste > $GRIM_DEFAULT_DIR/$(date +'%d%m%y_%Hh%Mm%Ss_grim.png')
+# only to clipboard
+bindsym print exec --no-startup-id slurp | grim -g - -- - | wl-copy
+
+# Audio controls
+# todo: implement wob - github.com/francma/wob
+bindsym XF86AudioRaiseVolume  exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
+bindsym XF86AudioLowerVolume  exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') -5%
+bindsym XF86AudioMute         exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
+bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+bindsym XF86AudioPlay         exec playerctl play
+bindsym XF86AudioPause        exec playerctl pause
+bindsym XF86AudioNext         exec playerctl next
+bindsym XF86AudioPrev         exec playerctl previous
+
+# brightness controls
+bindsym XF86MonBrightnessUp exec brightnessctl s +2% # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl s 2%- # decrease screen brightness
+
+# window bits
+for_window [shell="xwayland"] title_format "<span>[X] %title</span>"
+for_window [shell=".*"] title_format "%title :: %shell"
+
+### Idle configuration
+exec swayidle -w \
+     timeout 300 'swaylock -f -c 000000' \
+     timeout 600 'swaymsg "output * dpms off"' \
+     resume 'swaymsg "output * dpms on"' \
+     before-sleep 'swaylock -f -c 000000'
+
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+### Input configuration
+input "1739:52620:SYNA8005:00_06CB:CD8C_Touchpad" {
+      dwt enabled
+      tap enabled
+      natural_scroll disabled
+      pointer_accel 0.1
+      accel_profile adaptive
+}
+
+input * xkb_layout "gb"
+
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+# `man 5 sway-input` for more information about this section.
+# support clamshell mode
+set $laptop eDP-1
+bindswitch --reload lid:on output $laptop disable
+bindswitch --reload lid:off output $laptop enable
+
+output eDP-1 {
+  resolution 3840x2160
+  scale 2
+}
+
+output HDMI-A-1 {
+  resolution 1920x1080
+  scale 1
+}
+
+### Key bindings
+#
+# Basics:
+#
+# Start a terminal
+bindsym $mod+Return exec $term
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+
+# Start launcher
+bindsym $mod+space exec $menu
+
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod normal
+
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# Exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+
+# Moving around:
+#
+# Move your focus around
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+# Or use $mod+[up|down|left|right]
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move the focused window with the same, but add Shift
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+# Ditto, with arrow keys
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Workspaces:
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+bindsym $mod+Tab workspace back_and_forth
+
+# You can "split" the current object of your focus with
+# $mod+b or $mod+v, for horizontal and vertical splits
+bindsym $mod+b splith
+bindsym $mod+v splitv
+
+# Switch the current container between different layout styles
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+    
+# Make the current focus fullscreen
+bindsym $mod+f fullscreen
+
+# Toggle the current focus between tiling and floating mode
+bindsym $mod+Shift+space floating toggle
+
+# Swap focus between the tiling area and the floating area
+#bindsym $mod+space focus mode_toggle
+
+# Move focus to the parent container
+bindsym $mod+a focus parent
+
+# Move the currently focused window to the scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+minus scratchpad show
+
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# floating window
+for_window [instance=crx_nckgahadagoaajjgafhacjanaoiihapd] move scratchpad
+for_window [title="Firefox - Sharing Indicator"] kill
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [window_role="About"] floating enable
+for_window [class="xdg-desktop-portal-kde"] floating enable
+for_window [app_id="thunar"] floating enable
+for_window [class="^vlc$"] floating enable
+for_window [title="Slack Call Minipanel"] floating enable
+
+for_window [app_id="nm-connection-editor"]
+{
+  floating enable
+  resize set width  882px
+  resize set height 600px
+}
+
+for_window [app_id="pavucontrol"]
+{
+  floating enable
+  resize set width  882px
+  resize set height 800px
+}
+
+# waybar
+bar {
+    output *
+    swaybar_command waybar
+}
+
+include @sysconfdir@/sway/config.d/*
