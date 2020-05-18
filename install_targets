@@ -9,7 +9,6 @@ docker-compose
 firefox
 fwupd
 fzf
-git
 go
 grim
 htop
@@ -18,7 +17,6 @@ jq
 kubectl
 libnotify
 mako
-openssh
 pavucontrol
 pamixer
 ranger
